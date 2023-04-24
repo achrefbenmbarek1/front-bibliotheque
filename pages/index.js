@@ -19,7 +19,7 @@ const LoginPage = () => {
     const router = useRouter();
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
     const onLogin = async () => {
-        const response = await fetch('http://localhost:5050/admin/login', {
+        const response = await fetch('http://localhost:8080/login', {
             method: 'POST',
             body: JSON.stringify({ email, password }),
             headers: {

@@ -12,7 +12,7 @@ const AppMenu = () => {
     const { layoutConfig } = useContext(LayoutContext);
     const contextPath = getConfig().publicRuntimeConfig.contextPath;
     const handleLogout = async () => {
-        const response = await fetch('http://localhost:5050/admin/logout', {
+        const response = await fetch('http://localhost:8080/logout', {
             method: 'POST',
             credentials: 'include',
             body: JSON.stringify({}),
@@ -37,16 +37,16 @@ const AppMenu = () => {
             items: [
                 { label: 'Info Formulaire de devis', icon: 'pi pi-fw pi-user', to: '/coordonneClient' },
                 {
-                    label: 'Services ',
+                    label: 'Livres ',
                     icon: 'pi pi-fw pi-share-alt',
                     items: [
                         {
-                            label: 'Ajouter Service',
+                            label: 'Ajouter Livre',
                             icon: 'pi pi-fw pi-plus',
                             to: '/services/ajout_service'
                         },
                         {
-                            label: 'Tout les Services',
+                            label: 'Tout les Livres',
                             icon: 'pi pi-fw pi-search',
                             to: '/services'
                         }

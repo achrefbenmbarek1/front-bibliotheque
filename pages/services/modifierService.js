@@ -37,7 +37,6 @@ const onTemplateSelect = (e) => {
 
 
 
-
 const onTemplateUpload = (e) => {
     let _totalSize = 0;
 
@@ -81,10 +80,11 @@ const headerTemplate = (options) => {
 };
 
 const itemTemplate = (file, props) => {
+        console.log('mil item template', file);
     return (
         <div className="flex align-items-center flex-wrap">
             <div className="flex align-items-center" style={{ width: '40%' }}>
-                <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
+                <img alt={file.name ?? file} role="presentation" src={file.objectURL ?? `http://localhost:5050/imageService/${file}`} width={100} />
                 <span className="flex flex-column text-left ml-3">
                     {file.name}
                     <small>{new Date().toLocaleDateString()}</small>
@@ -97,6 +97,7 @@ const itemTemplate = (file, props) => {
 };
 
 const emptyTemplate = () => {
+        console.log('ena fil empty template')
     return (
         <div className="flex align-items-center flex-column">
             <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>

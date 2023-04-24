@@ -35,7 +35,7 @@ const FormLayoutDemo = () => {
 
         setTotalSize(_totalSize);
 
-        setImage(files[0])
+        setImageDeCouverture(files[0])
 
     };
 
@@ -51,12 +51,30 @@ const FormLayoutDemo = () => {
 
         setTotalSize(_totalSize);
         toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+        const formData = new FormData();
+        if (e.files && e.files[0]) {
+            formData.append('file', e.files[0]);
+            fetch('/books/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Upload failed with status ' + response.status);
+                    }
+                    console.log('Upload success:', response);
+                })
+                .catch(error => {
+                    console.error('Upload error:', error);
+                });
+
+        }
     };
 
     const onTemplateRemove = (file, callback) => {
-        console.log("image in remove ", image)
+        console.log("image in remove ", imageDeCouverture)
         console.log("file in remove ", file);
-        setImage(undefined);
+        setImageDeCouverture(undefined);
 
         setTotalSize(totalSize - file.size);
         callback();
@@ -120,28 +138,36 @@ const FormLayoutDemo = () => {
 
 
 
-    const [image, setImage] = useState(null);
+    const [imageDeCouverture, setImageDeCouverture] = useState(null);
     const [titre, setTitre] = useState('');
-    const [description, setDescription] = useState('');
+    const [name, setName] = useState('');
+    const [prix, setPrix] = useState(0);
+    const [auteur, setAuteur] = useState('');
+    const [langue, setLangue] = useState('');
+    const [genre, setGenre] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('image', image);
-        formData.append('titre', titre);
-        formData.append('description', description);
+        // const formData = new FormData();
+        // formData.append('imageDeCouverture', imageDeCouverture);
+        // formData.append('titre', titre);
+        // formData.append('description', description);
 
 
 
 
         try {
 
-            if (image && titre !== '' && description !== '') {
-                const response = await fetch('http://localhost:5050/service/ajouter_service',
+            if (imageDeCouverture && titre !== '' && description !== '') {
+                const response = await fetch('http://localhost:8080/books',
                     {
                         method: 'POST',
-                        body: formData,
-                        credentials: 'include'
+                        body: JSON.stringify({ imageDeCouverture, titre, name, auteur, genre, langue, prix }),
+                        credentials: 'include',
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+
                     });
                 console.log(response);
                 router.push('/services')
@@ -154,9 +180,9 @@ const FormLayoutDemo = () => {
     }
 
     const router = useRouter()
-    const onUpload = () => {
-        toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
-    };
+    // const onUpload = () => {
+    //     toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
+    // };
     return (
         <div className="grid">
             <div className="col-12 md:col-6">
@@ -164,10 +190,34 @@ const FormLayoutDemo = () => {
                     <form onSubmit={handleSubmit}>
                         <h5>Ajouter Services</h5>
                         <div className="field">
-                            <label htmlFor="titre">Nom Service</label>
+                            <label htmlFor="titre">titre</label>
                             <InputText onChange={(e) => setTitre(e.target.value)} id="titre" name="titre" type="text" />
                         </div>
 
+                        <div className="field">
+                            <label htmlFor="nom">nom </label>
+                            <InputText onChange={(e) => setName(e.target.value)} id="nom" name="nom" type="text" />
+                        </div>
+
+                        <div className="field">
+                            <label htmlFor="auteur">auteur </label>
+                            <InputText onChange={(e) => setAuteur(e.target.value)} id="auteur" name="auteur" type="text" />
+                        </div>
+
+                        <div className="field">
+                            <label htmlFor="genre">genre </label>
+                            <InputText onChange={(e) => setGenre(e.target.value)} id="genre" name="genre" type="text" />
+                        </div>
+
+                        <div className="field">
+                            <label htmlFor="langue">langue </label>
+                            <InputText onChange={(e) => setLangue(e.target.value)} id="langue" name="langue" type="text" />
+                        </div>
+
+                        <div className="field">
+                            <label htmlFor="prix">prix </label>
+                            <InputText onChange={(e) => setPrix(e.target.value)} id="prix" name="prix" type="text" />
+                        </div>
                         <div className="field col-12">
                             <label htmlFor="description">Description</label>
                             <InputTextarea id="description" name="description" onChange={(e) => setDescription(e.target.value)} rows="4" />

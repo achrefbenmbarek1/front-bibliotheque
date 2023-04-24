@@ -19,29 +19,30 @@ import { withRouter } from 'next/router'
 const PanelDemo = () => {
     const router = useRouter();
     const menu1 = useRef(null);
-    const [serviceCardsContent, setServiceCardsContent] = useState([]);
-    const PROTOCOLANDHOSTNAMEPARTOFTHEURL = 'http://localhost:5050/';
+    const [bookCardsContent, setBookCardsContent] = useState([]);
+    const PROTOCOLANDHOSTNAMEPARTOFTHEURL = 'http://localhost:8080/';
 
     useEffect(() => {
-        fetch(PROTOCOLANDHOSTNAMEPARTOFTHEURL + 'services')
+        fetch(PROTOCOLANDHOSTNAMEPARTOFTHEURL + 'books')
             .then((response) => response.json())
             .then((data) => {
-                setServiceCardsContent(data);
+                setBookCardsContent(data);
+                console.log("mil use effect", data);
             })
             .catch((error) => console.log(error));
     }, []);
 
-    const editCard = (cardContent) => {    
-        const {_id,titre,image,description}=cardContent;     
+    const editCard = (cardContent) => {
+        const {_id,titre,image,description}=cardContent;
         router.push({
             pathname: '/services/modifierService',
             query: {_id,titre,image,description}
         })
     };
 
-    const readCard = (cardContent) => {    
-        const {_id,titre,image,description}=cardContent; 
-        console.log("image . current in index", image);    
+    const readCard = (cardContent) => {
+        const {_id,titre,image,description}=cardContent;
+        console.log("image . current in index", image);
         router.push({
             pathname: '/services/singleService',
             query: {_id,titre,image,description}
@@ -61,7 +62,7 @@ const PanelDemo = () => {
                 console.log('serviceSuccessfully deleted');
             })
             .catch((error) => console.log(error));
-        setServiceCardsContent(serviceCardsContent.filter((card) => card._id !== id));
+        setBookCardsContent(bookCardsContent.filter((card) => card._id !== id));
     };
 
     const toolbarItems = [
@@ -113,25 +114,26 @@ const PanelDemo = () => {
             />
         </div>
     );
-    if (serviceCardsContent.length === 0) {
+    if (bookCardsContent.length === 0) {
         return <div>loading...</div>;
     }
     return (
         <div className="grid">
-            {serviceCardsContent.map((cardContent, index) => {
-                const json_data = JSON.stringify(cardContent);
-                console.log(json_data)
+            {bookCardsContent.map((cardContent, index) => {
+                console.log("it's me mario",cardContent.imageDeCouverture)
+                // const json_data = JSON.stringify(cardContent);
+                // console.log(json_data)
 
                 return (
                     <div key={cardContent._id} className="card col-12 md:col-6">
                         <Fieldset legend={cardContent.titre} toggleable>
-                            <img src={PROTOCOLANDHOSTNAMEPARTOFTHEURL + 'imageService/' + cardContent.image} style={{ height: 215.1, width: 322.5 }} className="w-6" />
-                            <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{cardContent.description}</p>
+                            <img src={PROTOCOLANDHOSTNAMEPARTOFTHEURL + 'images/' + cardContent.imageDeCouverture} style={{ height: 215.1, width: 322.5 }} className="w-6" />
+                            <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{cardContent.prix}</p>
                         </Fieldset>
                             <Button label="Consulter" className="p-button-success m-4" onClick={() => readCard(cardContent)} />
                             <Button label="Modifier" className="m-4" onClick={() => editCard(cardContent)} />
                             <Button label="Supprimer" className="p-button-danger m-4" onClick={() => removeCard(cardContent._id)} />
-                            
+
                     </div>
                 );
             })}
