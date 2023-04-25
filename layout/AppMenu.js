@@ -21,10 +21,6 @@ const AppMenu = () => {
             }
         })
         if (response.ok) {
-            // if (Cookies.get('authenticated')) {
-            //     Cookies.remove('authenticated');
-            // }
-            // Cookies.set('authenticated','false');
             removeCookie('authenticated');
             router.push('/');
         }
@@ -35,10 +31,25 @@ const AppMenu = () => {
             icon: 'pi pi-fw pi-home',
             label: 'Dashboard',
             items: [
-                { label: 'Info Formulaire de devis', icon: 'pi pi-fw pi-user', to: '/coordonneClient' },
+                {
+                    label: 'Adherent ',
+                    icon: 'pi pi-fw pi-user',
+                    items: [
+                        {
+                            label: 'Ajouter adherant',
+                            icon: 'pi pi-fw pi-plus',
+                            to: '/adherents/ajout_adherent'
+                        },
+                        {
+                            label: 'Tout les Adherants',
+                            icon: 'pi pi-fw pi-search',
+                            to: '/adherents'
+                        }
+                    ]
+                },
                 {
                     label: 'Livres ',
-                    icon: 'pi pi-fw pi-share-alt',
+                    icon: 'pi pi-fw pi-id-card',
                     items: [
                         {
                             label: 'Ajouter Livre',
@@ -54,49 +65,25 @@ const AppMenu = () => {
                 },
 
                 {
-                    label: 'Projet ',
+                    label: 'Empreint ',
                     icon: 'pi pi-fw pi-sun',
                     items: [
                         {
-                            label: 'Ajouter Projet',
+                            label: 'Ajouter Empreint',
                             icon: 'pi pi-fw pi-plus',
-                            to: '/projet/ajout_projet'
+                            to: '/empreints/ajout_empreint'
                         },
                         {
-                            label: 'Tout les Projet',
+                            label: 'Tout les Empreints',
                             icon: 'pi pi-fw pi-search',
-                            to: '/projet'
+                            to: '/empreints'
                         }
                     ]
                 },
 
-                {
-                    label: 'Article',
-                    icon: 'pi pi-fw  pi-id-card',
-                    items: [
-                        {
-                            label: 'Ajouter Article',
-                            icon: 'pi pi-fw pi-plus',
-                            to: '/articles/ajout_article'
-                        },
-                        {
-                            label: 'Tout les Articles',
-                            icon: 'pi pi-fw pi-search',
-                            to: '/articles'
-                        }
-                    ]
-                },
-
-                { label: 'Info Contact', icon: 'pi pi-fw pi-info-circle', to: '/contactInfo' },
-                { label: 'Puissance', icon: 'pi pi-fw pi-bolt', to: '/puissance' },
-                { label: 'Indicateur', icon: 'pi pi-fw pi-chart-pie', to: '/indicateur' },
                 { label: 'Logout', icon: 'pi pi-fw pi-sign-out', command: handleLogout }
             ]
         },
-        {
-            label: 'Partie Front',
-            items: [{ label: 'Aller sur le site web', icon: 'pi pi-fw pi-globe', to: '/landing' }]
-        }
     ];
 
     return (

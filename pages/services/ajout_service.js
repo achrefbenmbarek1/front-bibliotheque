@@ -40,36 +40,72 @@ const FormLayoutDemo = () => {
     };
 
 
-
-
-    const onTemplateUpload = (e) => {
-        let _totalSize = 0;
-
-        e.files.forEach((file) => {
-            _totalSize += file.size || 0;
-        });
-
-        setTotalSize(_totalSize);
-        toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+    const invoiceUploadHandler = ({ files }) => {
+        console.log("files", files);
         const formData = new FormData();
-        if (e.files && e.files[0]) {
-            formData.append('file', e.files[0]);
-            fetch('/books/upload', {
-                method: 'POST',
-                body: formData
+        console.log("houwa wala le", files[0]);
+        formData.append('file', files[0]);
+        fetch('http://localhost:8080/books/upload', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                "Authorization": `Basic ${encodedCredentials}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to upload file');
+                }
+                return response.text();
+            }).then(responseText => {
+                console.log("hedha ili hachti bih", responseText);
+                setImageName(responseText);
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Upload failed with status ' + response.status);
-                    }
-                    console.log('Upload success:', response);
-                })
-                .catch(error => {
-                    console.error('Upload error:', error);
-                });
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                throw error;
+            });
 
-        }
+        // const fileReader = new FileReader();
+        // fileReader.onload = (e) => {
+        //     uploadInvoice(e.target.result);
+        // };
+        // fileReader.readAsDataURL(file);
     };
+
+
+    // const onTemplateUpload = (e) => {
+    //     let _totalSize = 0;
+    //     console.log("hani fil upload");
+
+    //     e.files.forEach((file) => {
+    //         _totalSize += file.size || 0;
+    //     });
+
+    //     setTotalSize(_totalSize);
+    //     toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+    //     const formData = new FormData();
+    //     if (e.files && e.files[0]) {
+    //         formData.append('file', e.files[0]);
+    //     }
+    //     // if (e.files && e.files[0]) {
+    //     //     formData.append('file', e.files[0]);
+    //     //     fetch('/books/upload', {
+    //     //         method: 'POST',
+    //     //         body: formData
+    //     //     })
+    //     //         .then(response => {
+    //     //             if (!response.ok) {
+    //     //                 throw new Error('Upload failed with status ' + response.status);
+    //     //             }
+    //     //             console.log('Upload success:', response);
+    //     //         })
+    //     //         .catch(error => {
+    //     //             console.error('Upload error:', error);
+    //     //         });
+
+    //     // }
+    // };
 
     const onTemplateRemove = (file, callback) => {
         console.log("image in remove ", imageDeCouverture)
@@ -145,37 +181,39 @@ const FormLayoutDemo = () => {
     const [auteur, setAuteur] = useState('');
     const [langue, setLangue] = useState('');
     const [genre, setGenre] = useState('');
+    const [imageName, setImageName] = useState('');
+    const [nbCopie, setNbCopie] = useState('');
+    const username = "achref";
+    const password = "elpsycongroo";
+    const encodedCredentials = Buffer.from(`${username}:${password}`).toString('base64');
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // const formData = new FormData();
-        // formData.append('imageDeCouverture', imageDeCouverture);
-        // formData.append('titre', titre);
-        // formData.append('description', description);
-
-
-
-
         try {
+            const regex = /^\d+(\.\d+)?$/;
 
-            if (imageDeCouverture && titre !== '' && description !== '') {
+            if (imageName && titre && regex.test(prix) && auteur && langue && genre && name) {
                 const response = await fetch('http://localhost:8080/books',
                     {
                         method: 'POST',
-                        body: JSON.stringify({ imageDeCouverture, titre, name, auteur, genre, langue, prix }),
-                        credentials: 'include',
+                        body: JSON.stringify({ 'imageDeCouverture': imageName, titre, name, auteur, genre, langue, "prix": parseFloat(prix), "nbCopie":parseInt(nbCopie) }),
+                        // credentials: 'include',
                         headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Basic ${encodedCredentials}`
+
                         }
 
                     });
+                if (response.ok) {
+                    router.push('/services')
+                }
                 console.log(response);
-                router.push('/services')
             }
         } catch (error) {
             console.log(error);
         }
-        console.log(formData);
 
     }
 
@@ -188,7 +226,7 @@ const FormLayoutDemo = () => {
             <div className="col-12 md:col-6">
                 <div className="card p-fluid">
                     <form onSubmit={handleSubmit}>
-                        <h5>Ajouter Services</h5>
+                        <h5>Ajouter Livre</h5>
                         <div className="field">
                             <label htmlFor="titre">titre</label>
                             <InputText onChange={(e) => setTitre(e.target.value)} id="titre" name="titre" type="text" />
@@ -215,14 +253,19 @@ const FormLayoutDemo = () => {
                         </div>
 
                         <div className="field">
+                            <label htmlFor="nbCopie">nombre de copies disponible </label>
+                            <InputText onChange={(e) => setNbCopie(e.target.value)} id="nbCopie" name="nbCopie" type="text" />
+                        </div>
+
+                        <div className="field">
                             <label htmlFor="prix">prix </label>
                             <InputText onChange={(e) => setPrix(e.target.value)} id="prix" name="prix" type="text" />
                         </div>
-                        <div className="field col-12">
-                            <label htmlFor="description">Description</label>
-                            <InputTextarea id="description" name="description" onChange={(e) => setDescription(e.target.value)} rows="4" />
+                        {/* <div className="field col-12"> */}
+                        {/*     <label htmlFor="description">Description</label> */}
+                        {/*     <InputTextarea id="description" name="description" onChange={(e) => setDescription(e.target.value)} rows="4" /> */}
 
-                        </div>
+                        {/* </div> */}
 
 
 
@@ -237,9 +280,12 @@ const FormLayoutDemo = () => {
                                 <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
 
                                 <FileUpload ref={fileUploadRef} name="image" accept="image/*" maxFileSize={3000000}
-                                    onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
+                                    /* onUpload={onTemplateUpload} */ onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
                                     headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
-                                    chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
+                                    chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions}
+                                    /* method="POST" url="http://localhost:8080/books/upload" */
+                                    customUpload={true}
+                                    uploadHandler={invoiceUploadHandler} />
                             </div>
                         </div>
 

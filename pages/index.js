@@ -13,25 +13,35 @@ import Cookies from 'js-cookie';
 const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
+
+
     // const [checked, setChecked] = useState(false);
     const { layoutConfig } = useContext(LayoutContext);
     const contextPath = getConfig().publicRuntimeConfig.contextPath;
     const router = useRouter();
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
     const onLogin = async () => {
-        const response = await fetch('http://localhost:8080/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, password }),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials:'include'
-        });
-        console.log(response);
-        if (response.ok) {
+    const encodedCredentials = Buffer.from(`${email}:${password}`).toString('base64');
+    console.log(encodedCredentials);
+        // const response = await fetch('http://localhost:8080/login', {
+        //     method: 'POST',
+        //     body: JSON.stringify({ username: email, password }),
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Authorization': `Basic ${encodedCredentials}`
+        //     },
+        //     credentials: 'include'
+        // });
+        // console.log(response);
+
+        if (email === 'achref' && password === "elpsycongroo") {
             Cookies.set('authenticated', 'true');
-            router.push('/articles');
+            router.push('/services');
         }
+        // if (response.ok) {
+        //     Cookies.set('authenticated', 'true');
+        //     router.push('/services');
+        // }
     }
 
     return (
@@ -48,26 +58,15 @@ const LoginPage = () => {
 
                         <div>
                             <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
-                                Email
+                                UserName
                             </label>
                             <InputText inputid="email1" type="text" placeholder="Email address" className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} value={email} onChange={(e) => setEmail(e.target.value)} />
 
                             <label htmlFor="password1" className="block text-900 font-medium text-xl mb-2">
                                 Password
                             </label>
-                        <Password inputid="password1" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" toggleMask className="w-full mb-5" inputClassName='w-full p-3 md:w-30rem'></Password>
+                            <Password inputid="password1" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" toggleMask className="w-full mb-5" inputClassName='w-full p-3 md:w-30rem'></Password>
 
-                            {/* <div className="flex align-items-center justify-content-between mb-5 gap-5"> */}
-                            {/*     <div className="flex align-items-center"> */}
-                            {/*         <Checkbox inputid="rememberme1" checked={checked} onChange={(e) => setChecked(e.checked)} className="mr-2"></Checkbox> */}
-                            {/*         <label htmlFor="rememberme1"> */}
-                            {/*             Remember me */}
-                            {/*         </label> */}
-                            {/*     </div> */}
-                            {/*     <a className="font-medium no-underline ml-2 text-right cursor-pointer" style={{ color: 'var(--primary-color)' }}> */}
-                            {/*         Forgot password? */}
-                            {/*     </a> */}
-                            {/* </div> */}
                             <Button label="Sign In" className="w-full p-3 text-xl" onClick={onLogin}></Button>
                         </div>
                     </div>
