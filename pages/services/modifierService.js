@@ -61,24 +61,9 @@ const FormLayoutDemo = ({ data }) => {
                 throw error;
             });
 
-        // const fileReader = new FileReader();
-        // fileReader.onload = (e) => {
-        //     uploadInvoice(e.target.result);
-        // };
-        // fileReader.readAsDataURL(file);
     };
 
 
-    // const onTemplateUpload = (e) => {
-    //     let _totalSize = 0;
-
-    //     e.files.forEach((file) => {
-    //         _totalSize += file.size || 0;
-    //     });
-
-    //     setTotalSize(_totalSize);
-    //     toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
-    // };
 
     const onTemplateRemove = (file, callback) => {
         console.log("image in remove ", imageDeCouverture)
@@ -146,7 +131,6 @@ const FormLayoutDemo = ({ data }) => {
 
     /////////////////////////////////////
 
-    // query: { idLivre, titre, imageDeCouverture, name, auteur, genre, langue, prix }
 
     const router = useRouter()
     const username = "achref";
@@ -251,7 +235,7 @@ const FormLayoutDemo = ({ data }) => {
                                 <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
 
                                 <FileUpload ref={fileUploadRef} name="image" accept="image/*" maxFileSize={3000000}
-                                    /* onUpload={onTemplateUpload} */ onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
+                                     onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
                                     headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
                                     chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions}
                                     customUpload={true} uploadHandler={invoiceUploadHandler} />

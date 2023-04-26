@@ -13,7 +13,7 @@ const AuthChecker = ({ children }) => {
             return null;
         }
         else if (authenticated && router.pathname === '/') {
-            router.push('/articles');
+            router.push('/services');
             return null;
         }
     }

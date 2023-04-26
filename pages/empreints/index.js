@@ -29,19 +29,19 @@ const PanelDemo = () => {
     }, []);
 
     const editCard = (cardContent) => {
-        const { id, livre, adherant } = cardContent;
+        const { id } = cardContent;
         router.push({
             pathname: '/empreints/modifierEmpreint',
-            query: { id, titre, adresse, description, images, productionAnuelle, type, video }
+            query: { id }
         })
     };
 
     const readCard = (cardContent) => {
-        const { id, livre, adherant, dated, datef } = cardContent;
+        const { id } = cardContent;
 
         router.push({
             pathname: '/empreints/singleEmpreint',
-            query: { id, "idadherant":livre.idadherant, "idLivre":adherant.idLivre,dated, datef }
+            query: { id }
         })
     };
 
@@ -73,8 +73,8 @@ const PanelDemo = () => {
                 return (
                     <div key={cardContent.id} className="card col-12 md:col-6">
                         <Fieldset legend={cardContent.id} toggleable>
-                            <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{"livre nom: " + cardContent.livre.title}</p>
-                            <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{"adhrant nom: " + cardContent.adherant.nom}</p>
+                            <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{"livre nom: " + cardContent.livre?.titre}</p>
+                            <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{"adhrant nom: " + cardContent.adherent?.nom}</p>
                             <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{"date debut: " + cardContent.dated}</p>
                             <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{"date fin: " + cardContent.datef}</p>
                         </Fieldset>

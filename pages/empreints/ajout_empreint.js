@@ -21,7 +21,7 @@ const FormLayoutDemo = () => {
 
 
     const [idLivre, setIdLivre] = useState('');
-    const [idadherant, setIdadherant] = useState('');
+    const [idAdherant, setIdAdherant] = useState('');
     const [dated, setDated] = useState('');
     const [datef, setDatef] = useState('');
     const username = "achref";
@@ -33,31 +33,21 @@ const FormLayoutDemo = () => {
         e.preventDefault();
 
         try {
-            if (idadherant && idLivre && dated && datef) {
-                // const response = await fetch('http://localhost:8080/Adherents/' + idadherant, {
-                //     // credentials: 'include',
-                //     headers: {
-                //         "Authorization": `Basic ${encodedCredentials}`,
-                //     }
+            if (idAdherant && idLivre && dated && datef) {
+                const parts = dated.split('-');
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1;
+                const day = parseInt(parts[2]);
+                const dateI = new Date(year, month, day);
+                    const partsF = datef.split('-');
+                    const yearF = parseInt(parts[0]);
+                    const monthF = parseInt(parts[1]) - 1;
+                    const dayF = parseInt(parts[2]);
+                    const dateF = new Date(yearF, monthF, dayF);
 
-                // });
-                // console.log(response);
-                // if (!response.ok) {
-                //     throw new Error("something went wrong")
-                // }
-                // const responseLivre = await fetch('http://localhost:8080/livres/' + idLivre, {
-                //     credentials: 'include',
-                //     headers: {
-                //         "Authorization": `Basic ${encodedCredentials}`,
-                //     }
-
-                // })
-                // if (!responseLivre.ok) {
-                //     throw new Error("something went wrong")
-                // }
                 const finalResponse = await fetch('http://localhost:8080/Emprunts', {
                     method: 'POST',
-                    body: JSON.stringify({  idLivre,  idadherant, dated, datef }),
+                    body: JSON.stringify( { idLivre, idAdherant, 'dated':dateI, 'datef':dateF }),
                     credentials: 'include',
                     headers: {
                         "Authorization": `Basic ${encodedCredentials}`,
@@ -86,7 +76,7 @@ const FormLayoutDemo = () => {
                         <h5>Ajouter Empreint:</h5>
                         <div className="field">
                             <label htmlFor="idAdherant">Id Adherant</label>
-                            <InputText onChange={(e) => setIdadherant(e.target.value)} id="idadherant" name="adherant" type="text" />
+                            <InputText onChange={(e) => setIdAdherant(e.target.value)} id="idadherant" name="adherant" type="text" />
                         </div>
 
                         <div className="field ">

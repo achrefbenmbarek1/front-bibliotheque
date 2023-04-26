@@ -23,25 +23,11 @@ const LoginPage = () => {
     const onLogin = async () => {
     const encodedCredentials = Buffer.from(`${email}:${password}`).toString('base64');
     console.log(encodedCredentials);
-        // const response = await fetch('http://localhost:8080/login', {
-        //     method: 'POST',
-        //     body: JSON.stringify({ username: email, password }),
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'Authorization': `Basic ${encodedCredentials}`
-        //     },
-        //     credentials: 'include'
-        // });
-        // console.log(response);
 
         if (email === 'achref' && password === "elpsycongroo") {
             Cookies.set('authenticated', 'true');
             router.push('/services');
         }
-        // if (response.ok) {
-        //     Cookies.set('authenticated', 'true');
-        //     router.push('/services');
-        // }
     }
 
     return (
@@ -51,7 +37,7 @@ const LoginPage = () => {
                 <div style={{ borderRadius: '56px', padding: '0.3rem', background: 'linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)' }}>
                     <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
                         <div className="text-center mb-5">
-                            <img src={`${contextPath}/demo/images/login/avatar.png`} alt="Image" height="50" className="mb-3" />
+                            <img src={`${contextPath}/demo/images/login/5087607.png`} alt="Image" height="50" className="mb-3" />
                             <div className="text-900 text-3xl font-medium mb-3">Welcome !</div>
                             <span className="text-600 font-medium">Sign in to continue</span>
                         </div>

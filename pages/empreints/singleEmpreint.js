@@ -3,32 +3,33 @@ import Gallery from '../../demo/components/Gallery';
 
 const EmptyPage = ({ data }) => {
 
-    const PROTOCOL_AND_HOSTNAME_PART_OF_THE_URL = 'http://localhost:5050';
 
     return (
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-                    <h3>Titre Projet:</h3>
-                    <h5>{data.titre}</h5>
-                    <h3>Description:</h3>
-                    <h5>{data.description}</h5>
-                    <h3>Adresse:</h3>
-                    <h5>{data.adresse}</h5>
-                    <h3>Production Anuelle:</h3>
-                    <h5>{data.productionAnuelle}</h5>
-                    <h3>type:</h3>
-                    <h5>{data.type}</h5>
-                    <Gallery 
-                        imagePaths={Array.isArray(data.images) ? 
-                            data.images.map((imageName) => `${ PROTOCOL_AND_HOSTNAME_PART_OF_THE_URL}/imagesProjet/${imageName}`): 
-                            `${PROTOCOL_AND_HOSTNAME_PART_OF_THE_URL}/imagesProjet/${data.images}`}>
+                    <h1>general:</h1>
+                    <h3>id: {data?.id}</h3>
+                    <h3>date debut: {data?.dated}</h3>
+                    <h3>date fin: {data?.datef}</h3>
+                    <h1>Livre:</h1>
+                    <h3>id: {data?.livre?.idLivre}</h3>
+                    <h3>Titre: {data?.livre?.titre}</h3>
+                    <h3>Nom: {data?.livre?.name}</h3>
+                    <h3>Auteur: {data?.livre?.auteur}</h3>
+                    <h3>genre: {data?.livre?.genre}</h3>
+                    <h3>prix: {data?.livre?.prix}</h3>
+                    <h3>nombre de copies disponibles: {data?.livre?.nbCopie}</h3>
+                    <h3>langue: {data?.livre?.langue}</h3>
+                    <h3>image de couverture: {data?.livre?.imageDeCouverture}</h3>
+                    <h1>Adherant:</h1>
+                    <h3>addresse: {data?.adherent?.addr}</h3>
+                    <h3>cin: {data?.adherent?.cin}</h3>
+                    <h3>datenaiss: {data?.adherent?.datenaiss}</h3>
+                    <h3>id: {data?.adherent?.idadherant}</h3>
+                    <h3>nom: {data?.adherent?.nom}</h3>
+                    <h3>prenom: {data?.adherent?.prenom}</h3>
 
-                    </Gallery>
-                    <video controls>
-                        <source src={`${PROTOCOL_AND_HOSTNAME_PART_OF_THE_URL}/videosProjet/${data.video}`} type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
                 </div>
             </div>
         </div>
@@ -36,7 +37,17 @@ const EmptyPage = ({ data }) => {
 };
 
 EmptyPage.getInitialProps = async ({ query }) => {
-    const data = query;
+    const username = "achref";
+    const password = "elpsycongroo";
+    const encodedCredentials = Buffer.from(`${username}:${password}`).toString('base64');
+    const response = await fetch("http://localhost:8080/Emprunts/" + query.id, {
+        headers: {
+            "Authorization": `Basic ${encodedCredentials}`,
+
+        }
+    })
+    const data = await response.json();
+    console.log("hedhi idata", data)
 
     return { data };
 };

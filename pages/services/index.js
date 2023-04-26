@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Fieldset } from 'primereact/fieldset';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { withRouter } from 'next/router'
 import { Buffer } from 'buffer';
 
@@ -29,17 +28,16 @@ const PanelDemo = () => {
             .catch((error) => console.log(error));
     }, []);
 
-    const editCard = (cardContent) => {
-        const { idLivre, titre, imageDeCouverture, name, auteur, genre, langue, prix, nbCopie } = cardContent;
-        router.push({
-            pathname: '/services/modifierService',
-            query: { idLivre, titre, imageDeCouverture, name, auteur, genre, langue, prix, nbCopie }
-        })
-    };
+    // const editCard = (cardContent) => {
+    //     const { idLivre, titre, imageDeCouverture, name, auteur, genre, langue, prix, nbCopie } = cardContent;
+    //     router.push({
+    //         pathname: '/services/modifierService',
+    //         query: { idLivre, titre, imageDeCouverture, name, auteur, genre, langue, prix, nbCopie }
+    //     })
+    // };
 
     const readCard = (cardContent) => {
         const { idLivre, titre, imageDeCouverture, name, auteur, genre, langue, prix, nbCopie } = cardContent;
-        // console.log("image . current in index", imageName);
         router.push({
             pathname: '/services/singleService',
             query: { idLivre, titre, imageDeCouverture, name, auteur, genre, langue, prix, nbCopie}
@@ -81,7 +79,7 @@ const PanelDemo = () => {
                             <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{"nombre de copie disponible: " + cardContent.nbCopie }</p>
                         </Fieldset>
                         <Button label="Consulter" className="p-button-success m-4" onClick={() => readCard(cardContent)} />
-                        <Button label="Modifier" className="m-4" onClick={() => editCard(cardContent)} />
+                        {/* <Button label="Modifier" className="m-4" onClick={() => editCard(cardContent)} /> */}
                         <Button label="Supprimer" className="p-button-danger m-4" onClick={() => removeCard(cardContent.idLivre)} />
 
                     </div>

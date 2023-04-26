@@ -26,13 +26,20 @@ const FormLayoutDemo = () => {
 
         try {
             if (nom && prenom && addr && datenaiss && cin) {
+                    const parts = datenaiss.split('-');
+                    const year = parseInt(parts[0]);
+                    const month = parseInt(parts[1]) - 1;
+                    const day = parseInt(parts[2]);
+                    const date = new Date(year, month, day);
+                    console.log(date);
                 const response = await fetch('http://localhost:8080/Adherents', {
+
                     method: 'POST',
-                    body: JSON.stringify({ nom, prenom, addr, datenaiss, cin }),
+                    body: JSON.stringify({ nom, prenom, addr, 'datenaiss':date, cin }),
                     credentials: 'include',
                     headers: {
-                        "Authorization": `Basic ${encodedCredentials}`,
                         "Content-Type": "application/json",
+                        "Authorization": `Basic ${encodedCredentials}`,
 
                     }
 

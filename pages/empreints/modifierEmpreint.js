@@ -3,10 +3,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
-import { useReducer } from 'react';
 import { FileUpload } from 'primereact/fileupload';
-import { useQueryClient, useMutation } from 'react-query';
-import Link from 'next/link';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
@@ -18,104 +15,121 @@ import { Tooltip } from 'primereact/tooltip';
 import { Tag } from 'primereact/tag';
 
 
-const FormLayoutDemo = ({data}) => {
-    
-///////////////////////////////////////////
+const FormLayoutDemo = ({ data }) => {
 
-const toast = useRef(null);
-const [totalSize, setTotalSize] = useState(0);
-const fileUploadRef = useRef(null);
+    ///////////////////////////////////////////
+    const toast = useRef(null);
+    const [totalSize, setTotalSize] = useState(0);
+    const fileUploadRef = useRef(null);
 
-const onTemplateSelect = (e) => {
-    let _totalSize = totalSize;
-    let files = e.files;
-    
-    Object.keys(files).forEach((key) => {
-        _totalSize += files[key].size || 0;
-        
-    });
+    const onTemplateSelect = (e) => {
+        let _totalSize = totalSize;
+        let files = e.files;
 
-    setTotalSize(_totalSize);
-    if(images!==undefined){
-    setImages([...images,...e.files]);}
+        Object.keys(files).forEach((key) => {
+            _totalSize += files[key].size || 0;
 
-};
+        });
+
+        setTotalSize(_totalSize);
+
+        setImageDeCouverture(files[0])
+
+    };
+
+    const invoiceUploadHandler = ({ files }) => {
+        console.log("files", files);
+        const formData = new FormData();
+        console.log("houwa wala le", files[0]);
+        formData.append('file', files[0]);
+        fetch('http://localhost:8080/books/upload', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                "Authorization": `Basic ${encodedCredentials}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to upload file');
+                }
+                return response.text();
+            }).then(responseText => {
+                console.log("hedha ili hachti bih", responseText);
+                setImageName(responseText);
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                throw error;
+            });
+
+    };
 
 
+    const onTemplateRemove = (file, callback) => {
+        console.log("image in remove ", imageDeCouverture)
+        console.log("file in remove ", file);
+        setImageDeCouverture(undefined);
 
+        setTotalSize(totalSize - file.size);
+        callback();
+    };
 
-const onTemplateUpload = (e) => {
-    let _totalSize = 0;
+    const onTemplateClear = () => {
+        setTotalSize(0);
+    };
 
-    e.files.forEach((file) => {
-        _totalSize += file.size || 0;
-    });
+    const headerTemplate = (options) => {
+        const { className, chooseButton, uploadButton, cancelButton } = options;
+        const value = totalSize / 10000;
+        const formatedValue = fileUploadRef && fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
 
-    setTotalSize(_totalSize);
-    toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
-};
-
-const onTemplateRemove = (file, callback) => {
-    console.log("images in remove ",images)
-    console.log("file in remove ",file);
-    setImages(images?.filter((image)=>image!==file));
-    //console.log("images in remove after filter ",images)
-    setTotalSize(totalSize - file.size);
-    callback();
-};
-
-const onTemplateClear = () => {
-    setTotalSize(0);
-};
-
-const headerTemplate = (options) => {
-    const { className, chooseButton, uploadButton, cancelButton } = options;
-    const value = totalSize / 10000;
-    const formatedValue = fileUploadRef && fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
-
-    return (
-        <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
-            {chooseButton}
-            {uploadButton}
-            {cancelButton}
-            <div className="flex align-items-center gap-3 ml-auto">
-                <span>{formatedValue} / 1 MB</span>
-                <ProgressBar value={value} showValue={false} style={{ width: '10rem', height: '12px' }}></ProgressBar>
+        return (
+            <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
+                {chooseButton}
+                {uploadButton}
+                {cancelButton}
+                <div className="flex align-items-center gap-3 ml-auto">
+                    <span>{formatedValue} / 2 MB</span>
+                    <ProgressBar value={value} showValue={false} style={{ width: '10rem', height: '12px' }}></ProgressBar>
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    };
 
-const itemTemplate = (file, props) => {
-    return (
-        <div className="flex align-items-center flex-wrap">
-            <div className="flex align-items-center" style={{ width: '40%' }}>
-                <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
-                <span className="flex flex-column text-left ml-3">
-                    {file.name}
-                    <small>{new Date().toLocaleDateString()}</small>
+    const itemTemplate = (file, props) => {
+        console.log('mil item template', file);
+        return (
+            <div className="flex align-items-center flex-wrap">
+                <div className="flex align-items-center" style={{ width: '40%' }}>
+                    <img alt={file.name ?? file} role="presentation" src={file.objectURL ?? `http://localhost:8080/images/${file}`} width={100} />
+                    <span className="flex flex-column text-left ml-3">
+                        {file.name}
+                        <small>{new Date().toLocaleDateString()}</small>
+                    </span>
+                </div>
+                <Tag value={props.formatSize} severity="warning" className="px-3 py-2" />
+                <Button type="button" icon="pi pi-times" className="p-button-outlined p-button-rounded p-button-danger ml-auto" onClick={() => onTemplateRemove(file, props.onRemove)} />
+            </div>
+        );
+    };
+
+    const emptyTemplate = () => {
+        console.log('ena fil empty template')
+        return (
+            <div className="flex align-items-center flex-column">
+                <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
+                <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5">
+                    Drag and Drop Image Here
                 </span>
             </div>
-            <Tag value={props.formatSize} severity="warning" className="px-3 py-2" />
-            <Button type="button" icon="pi pi-times" className="p-button-outlined p-button-rounded p-button-danger ml-auto" onClick={() => onTemplateRemove(file, props.onRemove)} />
-        </div>
-    );
-};
+        );
+    };
 
-const emptyTemplate = () => {
-    return (
-        <div className="flex align-items-center flex-column">
-            <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
-            <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5">
-                Drag and Drop Image Here
-            </span>
-        </div>
-    );
-};
+    const chooseOptions = { icon: 'pi pi-fw pi-images', iconOnly: true, className: 'custom-choose-btn p-button-rounded p-button-outlined' };
+    const uploadOptions = { icon: 'pi pi-fw pi-cloud-upload', iconOnly: true, className: 'custom-upload-btn p-button-success p-button-rounded p-button-outlined' };
+    const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined' };
 
-const chooseOptions = { icon: 'pi pi-fw pi-images', iconOnly: true, className: 'custom-choose-btn p-button-rounded p-button-outlined' };
-const uploadOptions = { icon: 'pi pi-fw pi-cloud-upload', iconOnly: true, className: 'custom-upload-btn p-button-success p-button-rounded p-button-outlined' };
-const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined' };
 
     /////////////////////////////////////
 
@@ -123,20 +137,13 @@ const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'c
 
 
     const router = useRouter();
-    const [titre, setTitre] = useState(data.titre);
-    const [adresse, setAdresse] = useState(data.adresse);
-    const [description, setDescription] = useState(data.description);
-    const [images, setImages] = useState(data.images);
-    const [productionAnuelle, setProductionAnuelle] = useState(data.productionAnuelle);
-    const [type, setType] = useState(data.type);
-    const [video, setVideo] = useState(data.video);
-    console.log("data.images ",data.images);
-    const types = [
-        { name: 'Pompage au fil du soleil', code: 'Pompage au fil du soleil' },
-        { name: 'Pompage raccordé steg', code: 'Pompage raccordé steg' },
-        { name: 'Maison raccordée STEG', code: 'Maison raccordée STEG' },
-        { name: 'Maison non raccordée STEG', code: 'Maison non raccordée STEG' }
-    ];
+    const [titre, setTitre] = useState(data?.livre?.titre);
+    const [auteur, setAuteur] = useState(data?.livre?.auteur);
+    const [langue, setLangue] = useState(data?.livre?.langue);
+    const [imageDeCouverture, setImageDeCouverture] = useState(data?.livre?.imageDeCouverture);
+    const [genre, setGenre] = useState(data?.livre?.genre);
+    const [name, setName] = useState(data?.livre?.name);
+    const [nbCopie, setNbCopie] = useState(data?.livre?.nbCopie);
 
 
     useEffect(() => {
@@ -145,113 +152,108 @@ const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'c
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        //console.log("type.name",type.name)
-        const _id = data._id;
-        const formData = new FormData();
-        console.log("9bal for each images",images)
-        if (images!== undefined && images!== null) {
-            if(!Array.isArray(images))
-                {formData.append('images', images);}
-                else{   
-                    images?.forEach((image) => {
-                    formData.append('images', image);
-                });}
-
-        }
-
-        formData.append('titre', titre);
-        formData.append('adresse', adresse);
-        formData.append('description', description);
-        formData.append('productionAnuelle', productionAnuelle);
-        formData.append('video', video);
-        
-        if(typeof type === 'object'){formData.append('type', type?.name);}
-        else{formData.append('type', type);}
-        
-        console.log('houni images', images);
-
-        
-
         try {
-            if (titre !== '' && adresse !== '' && description !== '' && productionAnuelle !== '' && type !== null ) {
-                const response = await fetch('http://localhost:5050/projet/update/' + _id, {
-                    method: 'PUT',
-                    body: formData,
-                    credentials: 'include'
-                });
+            const regex = /^\d+(\.\d+)?$/;
+
+            if (titre && regex.test(prix) && auteur && langue && genre && name && regex.test(nbCopie)) {
+                console.log("mil submit imta3 lupdate", imageDeCouverture)
+                console.log("mil submit imta3 lupdate route", data.imageDeCouverture)
+                console.log("mil submit imta3 imageName", imageName)
+
+                const response = await fetch('http://localhost:8080/books/' + data.idLivre,
+                    {
+                        method: 'PUT',
+                        body: JSON.stringify({ 'imageDeCouverture': imageName ? imageName : data.imageDeCouverture, titre, name, auteur, genre, langue, "prix": parseFloat(prix), "nbCopie": parseInt(nbCopie) }),
+                        credentials: 'include',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Basic ${encodedCredentials}`
+
+                        }
+
+                    });
                 console.log(response);
-                router.push('/projet');
+                if (response.ok) {
+                    router.push('/services')
+                }
             }
         } catch (error) {
             console.log(error);
         }
-        console.log(FormData);
-        
-    };
+
+    }
 
     return (
-<div className="grid">
-            <div className="col-12">
-                <div className="card">
-                <form onSubmit={handleSubmit}>
-                    <h5>Modifier Projet</h5>
-                    <div className="p-fluid formgrid grid">
-                        <div className="field col-12 md:col-6">
-                            <label htmlFor="firstname2">Titre</label>
+        <div className="grid">
+            <div className="col-12 md:col-6">
+                <div className="card p-fluid">
+                    <form onSubmit={handleSubmit}>
+                        <h2>Modifier Livre</h2>
+                        <div className="field">
+                            <label htmlFor="nbCopie ">nombre de copies</label>
+                            <InputText onChange={(e) => setNbCopie(e.target.value)} id="nbCopie" name="nbCopie" type="text" defaultValue={data.nbCopie} />
+                        </div>
+
+                        <div className="field">
+                            <label htmlFor="titre">titre</label>
                             <InputText onChange={(e) => setTitre(e.target.value)} id="titre" name="titre" type="text" defaultValue={data.titre} />
                         </div>
 
-                        <div className="field col-12">
-                            <label htmlFor="address">Address</label>
-                            <InputTextarea id="address" name="address" onChange={(e) => setAdresse(e.target.value)} rows="4" defaultValue={data.adresse} />
+                        <div className="field ">
+                            <label htmlFor="auteur">auteur</label>
+                            <InputTextarea onChange={(e) => setAuteur(e.target.value)} id="auteur" name="auteur" rows="4" defaultValue={data.auteur} />
+
                         </div>
-                        <div className="field col-12">
-                            <label htmlFor="description">Description</label>
-                            <InputTextarea onChange={(e) => setDescription(e.target.value)} id="description" name="description"  rows="4" defaultValue={data.description} />
+                        <div className="field ">
+                            <label htmlFor="genre">genre</label>
+                            <InputTextarea onChange={(e) => setGenre(e.target.value)} id="genre" name="genre" rows="4" defaultValue={data.genre} />
+
                         </div>
-                        <div className="field col-12 md:col-6">
-                            <label htmlFor="productionAnuelle">Production anuelle</label>
-                            <InputText onChange={(e) => setProductionAnuelle(e.target.value)} id="productionAnuelle" name="productionAnuelle" type="text" defaultValue={data.productionAnuelle} />
+                        <div className="field ">
+                            <label htmlFor="langue">langue</label>
+                            <InputTextarea onChange={(e) => setLangue(e.target.value)} id="langue" name="langue" rows="4" defaultValue={data.langue} />
+
                         </div>
-                        <div className="field col-12 md:col-3">
-                            <label htmlFor="type">Type</label>
-                            <Dropdown id="type" value={type} onChange={(e) => setType(e.value)} options={types} optionLabel="name" placeholder={data.type} defaultValue={data.type}></Dropdown>
+                        <div className="field ">
+                            <label htmlFor="prix">prix</label>
+                            <InputTextarea onChange={(e) => setPrix(e.target.value)} id="prix" name="prix" rows="4" defaultValue={data.prix} />
+
+                        </div>
+                        <div className="field ">
+                            <label htmlFor="nom">name</label>
+                            <InputTextarea onChange={(e) => setName(e.target.value)} id="nom" name="nom" rows="4" defaultValue={data.name} />
+
                         </div>
 
 
                         <div className="field col-12 ">
-                            <label >Images</label>
-                        <div>
-            <Toast ref={toast}></Toast>
+                            <label >Image</label>
+                            <div>
+                                <Toast ref={toast}></Toast>
 
-            <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
-            <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
-            <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
+                                <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
+                                <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
+                                <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
 
-            <FileUpload ref={fileUploadRef} name="images"  multiple accept="image/*" maxFileSize={3000000}
-                onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
-                headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
-                chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
-        </div>
-        </div>
-
-
-                        <div className="field col-12 ">
-                            <label htmlFor="state">video</label>
-                            <FileUpload name="myFile" className="custom-file-upload" 
-                                customUpload onSelect={(e) => {
-                                    setVideo(e.files[0])
-                                }}
-                                chooseLabel={video ? video.name : 'Choisir une video'} cancelLabel="Cancel" mode="basic"
-                                accept=".mp4" maxFileSize={1000000} />
+                                <FileUpload ref={fileUploadRef} name="image" accept="image/*" maxFileSize={3000000}
+                                     onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
+                                    headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
+                                    chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions}
+                                    customUpload={true} uploadHandler={invoiceUploadHandler} />
+                            </div>
                         </div>
-                    </div>
-                    <Button className={styles.submit_button} type="submit" label="Valider" icon="pi pi-check" />
-                </form>
+
+                        <Button className={styles.submit_button} type="submit" label="Valider" icon="pi pi-check" />
+
+                    </form>
                 </div>
+
+
+
             </div>
         </div>
     );
+
 };
 
 
@@ -260,12 +262,20 @@ const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'c
 
 
 FormLayoutDemo.getInitialProps = async ({ query }) => {
-    // Fetch data using the query parameter
-    const data = query;
-  
-    // Return the data as props
+    const username = "achref";
+    const password = "elpsycongroo";
+    const encodedCredentials = Buffer.from(`${username}:${password}`).toString('base64');
+    const response = await fetch("http://localhost:8080/Emprunts/" + query.id, {
+        headers: {
+            "Authorization": `Basic ${encodedCredentials}`,
+
+        }
+    })
+    const data = await response.json();
+    console.log("hedhi idata", data)
+
     return { data };
-  };
+};
 
 
 export default FormLayoutDemo;
