@@ -40,9 +40,9 @@ const FormLayoutDemo = () => {
                 const day = parseInt(parts[2]);
                 const dateI = new Date(year, month, day);
                     const partsF = datef.split('-');
-                    const yearF = parseInt(parts[0]);
-                    const monthF = parseInt(parts[1]) - 1;
-                    const dayF = parseInt(parts[2]);
+                    const yearF = parseInt(partsF[0]);
+                    const monthF = parseInt(partsF[1]) - 1;
+                    const dayF = parseInt(partsF[2]);
                     const dateF = new Date(yearF, monthF, dayF);
 
                 const finalResponse = await fetch('http://localhost:8080/Emprunts', {

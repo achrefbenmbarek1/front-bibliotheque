@@ -80,6 +80,7 @@ const AppMenu = () => {
                         }
                     ]
                 },
+                { label: 'Rendre livre', icon: 'pi pi-fw pi-plus', to: '/rendreLivre' },
 
                 { label: 'Logout', icon: 'pi pi-fw pi-sign-out', command: handleLogout }
             ]
