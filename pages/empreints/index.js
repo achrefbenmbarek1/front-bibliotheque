@@ -28,13 +28,13 @@ const PanelDemo = () => {
             .catch((error) => console.log(error));
     }, []);
 
-    const editCard = (cardContent) => {
-        const { id } = cardContent;
-        router.push({
-            pathname: '/empreints/modifierEmpreint',
-            query: { id }
-        })
-    };
+    // const editCard = (cardContent) => {
+    //     const { id } = cardContent;
+    //     router.push({
+    //         pathname: '/empreints/modifierEmpreint',
+    //         query: { id }
+    //     })
+    // };
 
     const readCard = (cardContent) => {
         const { id } = cardContent;
@@ -79,7 +79,7 @@ const PanelDemo = () => {
                             <p className="text-gray-800 sm:line-height-2 md:line-height-4 text-xl mt-4">{"date fin: " + cardContent.datef}</p>
                         </Fieldset>
                         <Button label="Consulter" className="p-button-success m-4" onClick={() => readCard(cardContent)} />
-                        <Button label="Modifier" className="m-4" onClick={() => editCard(cardContent)} />
+                        {/* <Button label="Modifier" className="m-4" onClick={() => editCard(cardContent)} /> */}
                         <Button label="Supprimer" className="p-button-danger m-4" onClick={() => removeCard(cardContent.id)} />
 
                     </div>
